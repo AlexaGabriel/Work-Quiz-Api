@@ -1,5 +1,6 @@
 import { ServicePlayer } from "../Service/ServicePlayer";
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 
 export default class ControllerPlayer{
     private ServicePlayer: ServicePlayer
@@ -9,8 +10,10 @@ export default class ControllerPlayer{
     async handlecreatePlayer(req: Request, res: Response){
         const {name, password} = req.body
         const maxScore = 0
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
         try {
-            const create = await this.ServicePlayer.create({name, password, maxScore})
+            const create = await this.ServicePlayer.create({name, password:hashedPassword, maxScore})
             return res.status(201).json(create)
         } catch (error) {
             return res.status(400).json({message: error})
@@ -43,4 +46,15 @@ export default class ControllerPlayer{
             return res.status(400).json({message: error})
         }
     }
-}
+    async handleAuthPlayer(req: Request, res: Response) {
+        const { name, password } = req.body as { name: string; password: string };
+        const player = await this.ServicePlayer.AuthPlayer({ name, password });
+        if (!player) {
+            return res.status(400).send({ error: "Invalid email or password" });
+        }
+        const passwordMatch = await bcrypt.compare(password, player.password);
+        if (!passwordMatch) {
+            return res.status(400).send({ error: "Invalid email or password" });
+        }
+        return res.status(200).send({ message: "Authentication successful" });
+    }}

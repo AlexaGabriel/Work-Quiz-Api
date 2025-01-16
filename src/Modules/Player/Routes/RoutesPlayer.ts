@@ -16,4 +16,7 @@ playerrouter.get("/findById/:id", async (req: Request, res: Response) => {
 playerrouter.put("/upPontuation/:id", async (req: Request, res: Response) => {
     await contPlayer.handleupdatePontuationPlayer(req, res);
 });
+playerrouter.post("/auth", async (req: Request, res: Response) => {
+    await contPlayer.handleAuthPlayer(req, res);
+});
 export default playerrouter;

@@ -31,5 +31,5 @@ model Question {
   answer String
   difficulty String
   category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String @unique
+  categoryId String 
 }

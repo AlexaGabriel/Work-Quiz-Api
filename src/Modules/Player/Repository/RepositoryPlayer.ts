@@ -1,7 +1,16 @@
-import { IPlayer, IPlayerRepo, IPontuation } from "../model/ModelPlayer";
+import { IPlayer, IPlayerAuth, IPlayerRepo, IPontuation } from "../model/ModelPlayer";
 import { prisma } from "../../../config/prisma";
 
 export class RepositoryPlayer implements IPlayerRepo{
+    async AuthPlayer(data: IPlayerAuth): Promise<IPlayerAuth | null> {
+        const authPlayer = await prisma.player.findFirst({
+            where:{
+                name: data.name,
+                password: data.password
+            }
+        });
+        return authPlayer;
+    }
     async create(player: IPlayer): Promise<IPlayer> {
         const create = await prisma.player.create({
             data:player

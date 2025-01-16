@@ -1,5 +1,5 @@
 import { RepositoryPlayer } from "../Repository/RepositoryPlayer";
-import { IPlayer, IPlayerRepo, IPontuation } from "../model/ModelPlayer";
+import { IPlayer, IPlayerAuth, IPlayerRepo, IPontuation } from "../model/ModelPlayer";
 import { SPlayer } from "../Schema/SchemaPlayer";
 
 export class ServicePlayer{
@@ -27,5 +27,9 @@ export class ServicePlayer{
     async updatePontuation(id: string, pontuation: IPontuation): Promise<IPontuation | null>{
         const upPontuation = await this.repository.updatePontuation(id, pontuation)
         return upPontuation
+    }
+    async AuthPlayer(data: IPlayerAuth): Promise<IPlayerAuth | null>{
+        const authPlayer = await this.repository.AuthPlayer(data)
+        return authPlayer
     }
 }

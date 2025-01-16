@@ -3,6 +3,10 @@ export interface IPlayer{
     password:string
     maxScore: number,
 }
+export interface IPlayerAuth{
+    name: string,
+    password: string
+}
 export interface IPontuation{
     maxScore: number,
 }
@@ -11,5 +15,5 @@ export interface IPlayerRepo{
     findAll(): Promise<IPlayer[]>
     findById(id: string): Promise<IPlayer | null>
     updatePontuation(id: string, pontuation: IPontuation): Promise<IPontuation | null>
-
+    AuthPlayer(data: IPlayerAuth): Promise<IPlayerAuth|null>
 }
