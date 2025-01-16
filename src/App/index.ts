@@ -1,5 +1,6 @@
 import  express  from "express";
 import catrouter from "../Modules/Category/Routes/RouteCategory";
+import playerrouter from "../Modules/Player/Routes/RoutesPlayer";
 
 const app = express();
 
@@ -9,6 +10,7 @@ app.get("/", (req, res) => {
     res.send("olá mundo");
 })
 app.use("/category", catrouter);
+app.use("/player", playerrouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {
