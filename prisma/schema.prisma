@@ -14,8 +14,8 @@ datasource db {
 }
 
 model Player {
-  id        String      @id @default(uuid())
-  name      String
+  id        String      @id @default(uuid()) 
+  name      String @unique
   password  String
   maxScore Int
 }

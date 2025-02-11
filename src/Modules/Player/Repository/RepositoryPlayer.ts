@@ -4,16 +4,23 @@ import { prisma } from "../../../config/prisma";
 export class RepositoryPlayer implements IPlayerRepo{
     async AuthPlayer(data: IPlayerAuth): Promise<IPlayerAuth | null> {
         const authPlayer = await prisma.player.findFirst({
-            where:{
+            where: {
                 name: data.name,
-                password: data.password
             }
         });
         return authPlayer;
     }
     async create(player: IPlayer): Promise<IPlayer> {
+        const existingUser = await prisma.player.findUnique({
+            where: { name: player.name },
+        });
+        
+        if (existingUser) {
+            throw new Error("Nome de usuário já existe");
+        }
+        
         const create = await prisma.player.create({
-            data:player
+            data: player
         });
         return create;
     }
@@ -38,5 +45,6 @@ export class RepositoryPlayer implements IPlayerRepo{
         });
         return upPontuation;
     }
+    
 
 } 

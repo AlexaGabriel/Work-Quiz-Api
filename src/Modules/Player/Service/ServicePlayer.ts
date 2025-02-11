@@ -1,6 +1,6 @@
 import { RepositoryPlayer } from "../Repository/RepositoryPlayer";
 import { IPlayer, IPlayerAuth, IPlayerRepo, IPontuation } from "../model/ModelPlayer";
-import { SPlayer } from "../Schema/SchemaPlayer";
+
 
 export class ServicePlayer{
     private repository: IPlayerRepo
@@ -8,11 +8,6 @@ export class ServicePlayer{
         this.repository = new RepositoryPlayer()
     }
     async create(player: IPlayer): Promise<IPlayer>{
-        const validate = SPlayer.safeParse(player)
-        if(!validate.success){
-            const errorMessages = validate.error.issues.map(issue => issue.message).join(", ");
-            throw new Error(`Validation failed: ${errorMessages}`);
-        }
         const create = await this.repository.create(player)
         return create
     }

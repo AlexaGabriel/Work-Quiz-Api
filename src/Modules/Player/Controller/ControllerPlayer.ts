@@ -1,5 +1,7 @@
 import { ServicePlayer } from "../Service/ServicePlayer";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { SPlayer } from "../Schema/SchemaPlayer";
+import { generateToken, verifyToken } from "../../../config/JWT";
 import bcrypt from "bcrypt";
 
 export default class ControllerPlayer{
@@ -9,17 +11,24 @@ export default class ControllerPlayer{
     }
     async handlecreatePlayer(req: Request, res: Response){
         const {name, password} = req.body
+        const validate = SPlayer.safeParse({name, password})
+        if(!validate.success){
+            const errorMessages = validate.error.issues.map(issue => issue.message).join(", ");
+            return res.status(400).json({message: errorMessages});
+        }
         const maxScore = 0
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         try {
             const create = await this.ServicePlayer.create({name, password:hashedPassword, maxScore})
             return res.status(201).json(create)
-        } catch (error) {
-            return res.status(400).json({message: error})
+        } catch (error: unknown) {
+            if (error instanceof Error && error.message === "Nome de usuário já existe!") {
+                return res.status(400).json({ message: error.message });
+            }
+            res.status(500).json({ message: "Erro interno do servidor" });
         }
-    }
-    async handlefindAllPlayer(req: Request, res: Response){
+    }    async handlefindAllPlayer(req: Request, res: Response){
         try {
             const findAll = await this.ServicePlayer.findAll()
             return res.status(200).json(findAll)
@@ -48,13 +57,19 @@ export default class ControllerPlayer{
     }
     async handleAuthPlayer(req: Request, res: Response) {
         const { name, password } = req.body as { name: string; password: string };
-        const player = await this.ServicePlayer.AuthPlayer({ name, password });
+        const player = await this.ServicePlayer.AuthPlayer({ name, password, id: "" });
         if (!player) {
-            return res.status(400).send({ error: "Invalid email or password" });
+            return res.status(400).send({ error: "Invalid name or password" });
+            
         }
         const passwordMatch = await bcrypt.compare(password, player.password);
         if (!passwordMatch) {
-            return res.status(400).send({ error: "Invalid email or password" });
+            return res.status(400).send({ error: "Invalid password" });
         }
-        return res.status(200).send({ message: "Authentication successful" });
-    }}
+
+        const token = generateToken({ id: player.id, name: player.name });
+        return res.status(200).json({ token, message: "Authentication successful" });
+    }
+
+    
+}

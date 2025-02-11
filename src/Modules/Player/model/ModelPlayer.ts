@@ -4,6 +4,7 @@ export interface IPlayer{
     maxScore: number,
 }
 export interface IPlayerAuth{
+    id: string,
     name: string,
     password: string
 }
